@@ -1,0 +1,27 @@
+titanic<-read.csv("titanic_original.csv")
+
+summary(titanic$embarked)
+
+titanic$embarked[titanic$embarked == ""] <- "S"
+
+
+summary(titanic$age)
+
+mean_age <- mean(titanic$age, na.rm = TRUE)
+titanic$age[is.na(titanic$age)] <- mean_age
+
+
+titanic %>% 
+  group_by(boat) %>% 
+  summarise(cnt = n()) %>% 
+  arrange(desc(cnt)) %>% 
+  print(n = Inf)
+
+levels(titanic$boat)[1] <- "None"
+
+has_cabin_number <- as.numeric(titanic$cabin != "")
+
+titanic <-  titanic %>% 
+           mutate(has_cabin_number = ifelse(cabin == "", 0, 1))
+
+write.csv(titanic, file = "titanic_clean.csv")
