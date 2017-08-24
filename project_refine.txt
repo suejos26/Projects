@@ -1,0 +1,71 @@
+refine<-read.csv("refine.csv")
+refine$company=as.character(refine$company)
+refine$Product.code...number=as.character(refine$Product.code...number)
+refine$address=as.character(refine$address)
+refine$city=as.character(refine$city)
+refine$country=as.character(refine$country)
+refine$name=as.character(refine$name)
+
+refine$company<-gsub("fillips","philips",refine$company)
+refine$company<-gsub("phlips","philips",refine$company)
+refine$company<-gsub("phillipS","philips",refine$company)
+refine$company<-gsub("Phillips","philips",refine$company)
+refine$company<-gsub("phillips","philips",refine$company)
+refine$company<-gsub("phillps","philips",refine$company)
+refine$company<-gsub("phllips","philips",refine$company)
+
+
+refine$company<-gsub("Akzo","akzo",refine$company)
+refine$company<-gsub("AKZO","akzo",refine$company)
+refine$company<-gsub("akzO","akzo",refine$company)
+refine$company<-gsub("ak zo","akzo",refine$company)
+
+ 
+
+refine$company<-gsub("Van Houten","van houten",refine$company)
+refine$company<-gsub("van Houten","van houten",refine$company)
+
+
+refine$company<-gsub("unilver","unilever",refine$company)
+refine$company<-gsub("Unilever","unilever",refine$company)
+
+refine <-refine %>% separate(Product.code...number,c("product_code","product_number"),sep="-",remove=TRUE)
+
+
+
+#refine %>%
+#lut <- c("p" = "Smartphone", 
+#"v" = "TV", 
+#"x" = "Laptop",
+#"q"="Tablet") %>%
+#mutate(refine, product_category="")
+#refine$product_category=lut[refine$product_code]
+
+
+lut <- c('p' = 'Smartphone', 
+'v' = 'TV', 
+'x' = 'Laptop',
+'q'='Tablet') 
+refine$product_category<-lut[refine$product_code]
+
+
+refine <- unite(refine, address, address, city, country, sep = ", " ,remove=TRUE)
+
+
+#refine$company_philips <- as.numeric(refine$company)
+#refine$company_philips <- " "
+#refine$company_philips <- as.numeric(refine$company)
+
+refine <-
+  refine %>% 
+    mutate(company_philips = ifelse(company == "philips", 1, 0),
+           company_akzo = ifelse(company == "akzo", 1, 0), 
+           company_van_houten = ifelse(company == "van houten", 1, 0),
+           company_unilever = ifelse(company == "unilever", 1, 0),
+           product_smartphone = ifelse(product_category == "Smartphone", 1, 0),
+           product_tv = ifelse(product_category == "TV", 1, 0),
+           product_laptop = ifelse(product_category == "Laptop", 1, 0),
+           product_tablet = ifelse(product_category == "Tablet", 1, 0))
+         
+
+write.csv(refine, file = "refine_clean.csv")
